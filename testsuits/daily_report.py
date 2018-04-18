@@ -29,7 +29,7 @@ w = open(w_path, 'w', encoding='UTF-8')
 
 f = open(config_path, 'r', encoding='utf_8_sig')
 namelist = []
-w.write(u"完整的名单："),
+w.write(u'完整的名单：'),
 for line in f:
     line = line.strip()
     line = re.sub(" ", "", line)
@@ -60,13 +60,13 @@ for e in list:
     e = re.sub("[A-Za-z0-9\!\%\[\]\,\。\.\-\(\)]", "", e)
     # 新的匹配
     last.append(e)
-w.write(u"\n\n提交的名单："),
+w.write('\n\n提交的名单：'),
 for last_name in last:
     w.write(last_name),
     w.write(' '),
 w.write('[%d]' % len(last))
 
-w.write(u"\n\n未提交名单："),
+w.write('\n\n未提交名单：'),
 uncommitted = []
 for m in namelist:
     if m in last:
