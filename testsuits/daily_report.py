@@ -17,7 +17,7 @@ def GetFileList(dir, fileList):
             GetFileList(new_dir, fileList)
     return fileList
 
-rq = time.strftime('%Y%m%d%H%M', time.localtime(time.time()))
+rq = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
 today_time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 dir = os.getcwd()
 # dir = 'D:\\daily'
@@ -26,58 +26,59 @@ config_path = dir + '\\config.ini'
 w_path = dir + '\\' + rq + '.log'
 
 w = open(w_path, 'w', encoding='UTF-8')
-
 f = open(config_path, 'r', encoding='utf_8_sig')
+
 namelist = []
 w.write(u'完整的名单：'),
-for line in f:
-    line = line.strip()
-    line = re.sub(" ", "", line)
-    if line == '':
+for list_namelist in f:
+    list_namelist = list_namelist.strip()
+    list_namelist = re.sub(" ", "", list_namelist)
+    if list_namelist == '':
         pass
     else:
-        w.write(line),
+        w.write(list_namelist),
         w.write(' '),
-        namelist.append(line)
-    # print(line)
-len_namelist = len(namelist)
-# if len_namelist < 0:
-#     len_namelist = 0
-w.write('[%d]' % len_namelist)
+        namelist.append(list_namelist)
+w.write('[%d]' % len(namelist))
 f.close()
 
 file_list = dir + '\\' + today_time + '\\'
-list = GetFileList(file_list, [])
+filelist = GetFileList(file_list, [])
 last = []
-for e in list:
+for e in filelist:
     e = os.path.basename(e)
     # 新的匹配
     e = re.sub(" ", "", e)
-    e = re.sub(u"(?isu)\S*技术部", "", e)
-    e = re.sub(u"(?isu)\S*产品部", "", e)
-    e = re.sub(u"(?isu)\S*运营部", "", e)
-    e = re.sub(u"(?isu)日报\S*", "", e)
+    # e = re.sub("(?isu)^\S*技术部", "", e)
+    # e = re.sub("(?isu)^\S*产品部", "", e)
+    # e = re.sub("(?isu)^\S*运营部", "", e)
+    # e = re.sub("(?isu)日报\S*$", "", e)
     e = re.sub("[A-Za-z0-9\!\%\[\]\,\。\.\-\(\)]", "", e)
     # 新的匹配
     last.append(e)
+
+uncommitted = []
+committed = []
+while len(namelist) > 0:
+    m = namelist.pop()
+    un = 'False'
+    for n in last:
+        if m in n:
+            committed.append(m)
+            un = 'True'
+    if un == 'False':
+        uncommitted.append(m)
+
 w.write('\n\n提交的名单：'),
-for last_name in last:
-    w.write(last_name),
+for list_committed in committed:
+    w.write(list_committed),
     w.write(' '),
-w.write('[%d]' % len(last))
+w.write('[%d]' % len(committed))
 
 w.write('\n\n未提交名单：'),
-uncommitted = []
-for m in namelist:
-    if m in last:
-        pass
-    else:
-        uncommitted.append(m)
-        w.write(m),
-        w.write(' '),
-len_uncommitted = len(uncommitted)
-# if len_uncommitted < 0:
-#     len_uncommitted = 1
-w.write('[%d]' % len_uncommitted)
+for list_uncommitted in uncommitted:
+    w.write(list_uncommitted),
+    w.write(' '),
+w.write('[%d]' % len(uncommitted))
 
 w.close()
